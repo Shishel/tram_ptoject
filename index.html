@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Карта с обновлением меток</title>
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=0f0cb27e-11ce-400f-af08-b552d5546e3c&lang=ru_RU"></script>
+    <style>
+        html, body, #map { width: 100%; height: 100%; margin: 0; padding: 0; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script>
+        let map;
+        let placemarks = []; // Массив для хранения всех меток
+
+        ymaps.ready(() => {
+            map = new ymaps.Map("map", {
+                center: [45.035470, 38.975313],
+                zoom: 12
+            });
+
+            updateTrams(); // Первичная загрузка меток
+            setInterval(updateTrams, 5000); // Обновляем данные каждые 5 секунд
+        });
+
+        function getIconColor(type) {
+            // Возвращаем соответствующий цвет в зависимости от типа
+            switch(type) {
+                case "4":
+                    return '#FFA500'; // Оранжевый для сервиса
+                case "3":
+                    return '#FF0000'; // Красный для трамвая
+                case "2":
+                    return '#008000'; // Зеленый для автобуса
+                case "1":
+                    return '#00BFFF'; // Голубой для тролейбуса
+                default:
+                    return '#000000'; // Черный цвет по умолчанию, если тип неизвестен
+            }
+        }
+
+        function updateTrams() {
+            fetch('http://127.0.0.1:5000/api/trams')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Получены данные:', data);  // Логируем полученные данные
+
+                    // Проверяем, что данные не пустые
+                    if (data.length === 0) {
+                        console.log("Нет данных для отображения");
+                        return;
+                    }
+
+                    // Удаляем все старые метки
+                    placemarks.forEach(placemark => {
+                        map.geoObjects.remove(placemark);
+                    });
+                    placemarks = []; // Очищаем массив меток
+
+                    // Перебираем данные и добавляем новые метки
+                    data.forEach(item => {
+                        const coordinates = [item.lat, item.lon];
+                        const iconColor = getIconColor(item.type); // Получаем цвет для метки в зависимости от типа
+
+                        // Создаем новую метку
+                        const placemark = new ymaps.Placemark(coordinates, {
+                            iconContent: item.route,  // Отображаем номер маршрута прямо на метке
+                        }, {
+                            preset: 'islands#icon',
+                            iconColor: iconColor
+                        });
+
+                        // Добавляем метку на карту
+                        map.geoObjects.add(placemark);
+                        placemarks.push(placemark); // Сохраняем метку в массиве
+                    });
+                })
+                .catch(error => {
+                    console.error("Ошибка при получении данных с API:", error);
+                });
+        }
+    </script>
+</body>
+</html>
