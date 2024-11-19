@@ -1,22 +1,21 @@
-from flask import Flask, jsonify
-from flask_cors import CORS
-
+from flask import Flask, jsonify, send_from_directory
+from flask_cors import CORS  # Для разрешения CORS
 import requests
 from threading import Thread
 import time
+import os
 
-app = Flask(__name__)
-CORS(app)
+app = Flask(__name__, static_folder='static')
+
+# Разрешаем CORS для всех маршрутов, связанных с API
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Глобальная переменная для хранения данных
 tram_data = []
 
 # Функция для корректировки координат
 def correct_coordinates(coord):
-    """
-    Исправляет формат координаты, добавляя точку после первых двух цифр.
-    """
-    coord = coord.strip()  # Убираем пробелы
+    coord = coord.strip()
     if len(coord) > 2:
         return float(coord[:2] + '.' + coord[2:])
     else:
@@ -28,17 +27,14 @@ def fetch_data():
     url = "https://proezd.kttu.ru/krasnodar/gps.txt"
     while True:
         try:
-            # Получаем файл с сервера
             response = requests.get(url)
             lines = response.text.strip().split('\n')  # Разбиваем файл построчно
             
-            # Преобразуем данные в структуру
-            tram_data = []
+            tram_data = []  # Сбрасываем старые данные
             for line in lines:
                 parts = line.split(',')
                 if len(parts) >= 3:
                     try:
-                        # Применяем корректировку к координатам
                         lat = correct_coordinates(parts[3])
                         lon = correct_coordinates(parts[2])
                         tram_data.append({
@@ -61,14 +57,16 @@ def fetch_data():
 def get_trams():
     return jsonify(tram_data)
 
-# Функция для запуска Flask в отдельном потоке
+# Роут для отдачи статичных файлов
+@app.route('/')
+def index():
+    return send_from_directory(os.path.join(app.root_path, 'static'), 'index.html')
+
+# Функция для запуска Flask
 def run_flask():
     app.run(debug=True, use_reloader=False)
 
 if __name__ == "__main__":
-    # Запускаем Flask в одном потоке
     flask_thread = Thread(target=run_flask)
     flask_thread.start()
-
-    # Запускаем функцию парсинга данных в основном потоке
     fetch_data()

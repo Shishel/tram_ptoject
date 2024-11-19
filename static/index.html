@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Карта с обновлением меток</title>
+    <title>Карта с кастомными метками</title>
     <script src="https://api-maps.yandex.ru/2.1/?apikey=0f0cb27e-11ce-400f-af08-b552d5546e3c&lang=ru_RU"></script>
     <style>
         html, body, #map { width: 100%; height: 100%; margin: 0; padding: 0; }
@@ -23,22 +23,6 @@
             updateTrams(); // Первичная загрузка меток
             setInterval(updateTrams, 5000); // Обновляем данные каждые 5 секунд
         });
-
-        function getIconColor(type) {
-            // Возвращаем соответствующий цвет в зависимости от типа
-            switch(type) {
-                case "4":
-                    return '#FFA500'; // Оранжевый для сервиса
-                case "3":
-                    return '#FF0000'; // Красный для трамвая
-                case "2":
-                    return '#008000'; // Зеленый для автобуса
-                case "1":
-                    return '#00BFFF'; // Голубой для тролейбуса
-                default:
-                    return '#000000'; // Черный цвет по умолчанию, если тип неизвестен
-            }
-        }
 
         function updateTrams() {
             fetch('http://127.0.0.1:5000/api/trams')
@@ -61,14 +45,35 @@
                     // Перебираем данные и добавляем новые метки
                     data.forEach(item => {
                         const coordinates = [item.lat, item.lon];
-                        const iconColor = getIconColor(item.type); // Получаем цвет для метки в зависимости от типа
 
-                        // Создаем новую метку
+                        // Определяем путь к иконке в зависимости от типа транспорта
+                        let iconImageHref = '';
+                        switch(item.type) {
+                            case '4':
+                                iconImageHref = '/static/images/service_test.png';  // Сервис
+                                break;
+                            case '3':
+                                iconImageHref = '/static/images/tram_test.png';     // Трамвай
+                                break;
+                            case '2':
+                                iconImageHref = '/static/images/bus.png';      // Автобус
+                                break;
+                            case '1':
+                                iconImageHref = '/static/images/trol.png'; // Троллейбус
+                                break;
+                            default:
+                                iconImageHref = '/static/images/default.png';  // По умолчанию
+                                break;
+                        }
+
+                        // Создаем новую метку с кастомной иконкой
                         const placemark = new ymaps.Placemark(coordinates, {
                             iconContent: item.route,  // Отображаем номер маршрута прямо на метке
                         }, {
-                            preset: 'islands#icon',
-                            iconColor: iconColor
+                            iconLayout: 'default#image',
+                            iconImageHref: iconImageHref,  // Используем кастомную иконку
+                            iconImageSize: [30, 30],  // Размер иконки
+                            iconImageOffset: [-15, -15]  // Смещение иконки
                         });
 
                         // Добавляем метку на карту
