@@ -1,43 +1,36 @@
 from flask import Flask, jsonify, send_from_directory
-from flask_cors import CORS  # Для разрешения CORS
+import threading
 import requests
-from threading import Thread
 import time
 import os
 
 app = Flask(__name__, static_folder='static')
 
-# Разрешаем CORS для всех маршрутов, связанных с API
-CORS(app, resources={r"/api/*": {"origins": "*"}})
-
-# Глобальная переменная для хранения данных
+# Глобальная переменная для данных
 tram_data = []
 
-# Функция для корректировки координат
-def correct_coordinates(coord):
-    coord = coord.strip()
-    if len(coord) > 2:
-        return float(coord[:2] + '.' + coord[2:])
-    else:
-        raise ValueError(f"Некорректная координата: {coord}")
-
-# Функция парсинга файла
+# Функция парсинга данных
 def fetch_data():
+    """
+    Постоянно запрашивает данные с удалённого сервера и обновляет глобальную переменную tram_data.
+    """
     global tram_data
     url = "https://proezd.kttu.ru/krasnodar/gps.txt"
     while True:
         try:
-            response = requests.get(url)
-            lines = response.text.strip().split('\n')  # Разбиваем файл построчно
-            
-            tram_data = []  # Сбрасываем старые данные
+            print("Начало запроса данных...")
+            response = requests.get(url, timeout=5)  # Устанавливаем таймаут для запроса
+            response.raise_for_status()
+            lines = response.text.strip().split('\n')
+
+            updated_data = []
             for line in lines:
                 parts = line.split(',')
-                if len(parts) >= 3:
+                if len(parts) >= 5:
                     try:
-                        lat = correct_coordinates(parts[3])
-                        lon = correct_coordinates(parts[2])
-                        tram_data.append({
+                        lat = float(parts[3][:2] + '.' + parts[3][2:])
+                        lon = float(parts[2][:2] + '.' + parts[2][2:])
+                        updated_data.append({
                             "type": parts[0].strip(),
                             "route": parts[1].strip(),
                             "speed": parts[4].strip(),
@@ -45,28 +38,36 @@ def fetch_data():
                             "lon": lon
                         })
                     except ValueError as e:
-                        print(f"Некорректная строка: {line} ({e})")
-            print("Данные обновлены:", tram_data)  # Лог обновления
+                        print(f"Ошибка преобразования данных: {e}")
+            tram_data = updated_data
+            print("Данные успешно обновлены!")
+        except requests.RequestException as e:
+            print(f"Ошибка при запросе данных: {e}")
         except Exception as e:
-            print("Ошибка при получении данных:", e)
-        
-        time.sleep(10)  # Запрашиваем данные каждые 10 секунд
+            print(f"Неизвестная ошибка: {e}")
 
-# API для предоставления данных
+        # Парсер обновляет данные каждые 10 секунд
+        time.sleep(10)
+
+# API для данных
 @app.route('/api/trams')
 def get_trams():
+    """
+    Возвращает данные о транспорте.
+    """
     return jsonify(tram_data)
 
-# Роут для отдачи статичных файлов
+# Отдача статического файла (карта)
 @app.route('/')
 def index():
+    """
+    Отдаёт файл index.html для отображения карты.
+    """
     return send_from_directory(os.path.join(app.root_path, 'static'), 'index.html')
 
-# Функция для запуска Flask
-def run_flask():
-    app.run(debug=True, use_reloader=False)
-
+# Основной запуск
 if __name__ == "__main__":
-    flask_thread = Thread(target=run_flask)
-    flask_thread.start()
-    fetch_data()
+    # Поток для парсинга данных
+    threading.Thread(target=fetch_data, daemon=True).start()
+    print("Сервер запускается...")
+    app.run(debug=True, use_reloader=False)
