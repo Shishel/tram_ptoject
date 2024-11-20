@@ -35,7 +35,7 @@ function updateTrams() {
 
                 // Определяем путь к иконке
                 const folderName = getFolderNameByType(type);
-                const iconPath = `/static/images/${folderName}/${route}.jpg`;
+                const iconPath = `/static/images/${folderName}/${route}.png`;
 
                 // Создаем метку с кастомной иконкой
                 const placemark = new ymaps.Placemark(coordinates, {
