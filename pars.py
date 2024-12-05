@@ -1,10 +1,14 @@
 from flask import Flask, jsonify, send_from_directory
+from flask_cors import CORS
 import threading
 import requests
 import time
 import os
 
+
 app = Flask(__name__, static_folder='static')
+
+CORS(app)
 
 # Глобальная переменная для данных
 tram_data = []
