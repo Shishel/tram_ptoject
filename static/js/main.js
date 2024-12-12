@@ -1,6 +1,6 @@
 let map;
 let placemarks = [];
-let route;
+let multiRoute;
 
 // Функция для получения имени папки на основе типа транспорта
 function getFolderNameByType(type) {
@@ -13,7 +13,7 @@ function getFolderNameByType(type) {
     }
 }
 
-// Функция для обновления меток
+// Функция для обновления меток транспорта
 function updateTrams() {
     fetch('/api/trams')
         .then(response => response.json())
@@ -68,79 +68,47 @@ function locateUser() {
     }
 }
 
-// Функция для получения координат через геокодер Яндекс по URL
-// Функция для получения координат через геокодер Яндекс по URL
-function getCoordinates(address) {
-    const apiKey = '0f0cb27e-11ce-400f-af08-b552d5546e3c'; // Замените на ваш ключ API
-    const geocodeUrl = 'https://geocode-maps.yandex.ru/1.x/';
-    const url = `${geocodeUrl}?geocode=${encodeURIComponent(address)}&format=json&apikey=${apiKey}`;
-    
-    return fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            const geoObject = data.response.GeoObjectCollection.featureMember[0]?.GeoObject;
-            if (!geoObject) throw new Error("Адрес не найден");
-
-            const coords = geoObject.Point.pos.split(' '); // Получаем координаты
-            const latLon = [parseFloat(coords[1]), parseFloat(coords[0])]; // Возвращаем их как массив [lat, lon]
-            console.log(`Координаты для ${address}: `, latLon); // Логирование координат
-            return latLon;
-        })
-        .catch(error => {
-            alert(error.message || "Ошибка при геокодировании");
-            throw error;
-        });
-}
-
-// Функция для построения мультимаршрута
-function buildMultiRoute() {
+// Функция для построения маршрута с использованием адресов
+function buildRoute() {
     const start = document.getElementById('start').value;
     const end = document.getElementById('end').value;
-    const waypoints = document.getElementById('waypoints').value;  // Дополнительные точки, если они есть
 
     if (!start || !end) return alert("Укажите начальную и конечную точки маршрута.");
 
-    // Разделяем точки на массив, если указаны дополнительные пути
-    const waypointsArr = waypoints ? waypoints.split(',').map(point => point.trim()) : [];
+    // Remove existing route if it exists
+    if (multiRoute) {
+        map.geoObjects.remove(multiRoute);
+    }
 
-    // Получаем координаты для начальной и конечной точки и дополнительных точек
-    Promise.all([getCoordinates(start), getCoordinates(end), ...waypointsArr.map(getCoordinates)])
-        .then(coords => {
-            console.log('Координаты для маршрута:', coords); // Логирование всех координат
+    // Create new route
+    multiRoute = new ymaps.multiRouter.MultiRoute({
+        referencePoints: [start, end],
+        params: {
+            routingMode: "auto"
+        }
+    }, {
+        boundsAutoApply: true
+    });
 
-            const multiRoute = new ymaps.multiRouter.MultiRoute({
-                referencePoints: [coords[0], ...coords.slice(1)],  // Создаем маршрут с начальной, дополнительными и конечной точками
-                params: {
-                    routingMode: 'masstransit'
-                }
-            }, {
-                boundsAutoApply: true
-            });
-
-            // Удаляем старый маршрут, если он есть
-            if (route) map.geoObjects.remove(route);
-
-            // Добавляем новый маршрут на карту
-            map.geoObjects.add(multiRoute);
-            map.setBounds(multiRoute.getBounds());  // Обрезаем карту по границам маршрута
-        })
-        .catch(error => alert("Не удалось найти одну из точек маршрута."));
+    // Add new route to map
+    map.geoObjects.add(multiRoute);
 }
 
 // Инициализация карты
 ymaps.ready(() => {
+    // Инициализируем карту
     map = new ymaps.Map("map", {
-        center: [45.035470, 38.975313],
-        zoom: 12
+        center: [45.035470, 38.975313],  // Центр карты (Краснодар)
+        zoom: 10
     });
 
-    locateUser();
-    updateTrams();
-    setInterval(updateTrams, 5000);
+    locateUser();  // Отображаем местоположение пользователя
+    updateTrams();  // Обновляем метки транспорта
+    setInterval(updateTrams, 10000);  // Обновляем метки каждую секунду
 
-    new ymaps.SuggestView('start', { boundedBy: [[44, 37], [46, 40]] });
-    new ymaps.SuggestView('end', { boundedBy: [[44, 37], [46, 40]] });
-    
-    // Вызываем функцию для построения мультимаршрута
-    document.getElementById('buildRouteBtn').addEventListener('click', buildMultiRoute);
+    new ymaps.SuggestView('start');  // Подсказки для начальной точки
+    new ymaps.SuggestView('end');    // Подсказки для конечной точки
+
+    // Обработчик для кнопки построения маршрута
+    document.getElementById('buildRouteBtn').addEventListener('click', buildRoute);
 });

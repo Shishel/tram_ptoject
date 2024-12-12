@@ -8,7 +8,7 @@ import os
 
 app = Flask(__name__, static_folder='static')
 
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Глобальная переменная для данных
 tram_data = []
@@ -74,4 +74,5 @@ if __name__ == "__main__":
     # Поток для парсинга данных
     threading.Thread(target=fetch_data, daemon=True).start()
     print("Сервер запускается...")
-    app.run(debug=True, use_reloader=False)
+    # Указываем путь к сертификатам
+    app.run(debug=True, use_reloader=False, host='0.0.0.0', port=443, ssl_context=('server.crt', 'server.key'))
