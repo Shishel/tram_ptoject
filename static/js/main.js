@@ -26,7 +26,13 @@ function updateTrams() {
                 const route = item.route;
 
                 const folderName = getFolderNameByType(type);
-                const iconPath = `/static/images/${folderName}/${route}.png`;
+                let iconPath;
+                if (route.length > 4) {
+                    iconPath = `/static/images/service/s.png`; // Альтернативный путь
+                } else {
+                    iconPath = `/static/images/${folderName}/${route}.png`; // Оригинальный путь
+                }
+                
 
                 const placemark = new ymaps.Placemark(coordinates, {
                     balloonContent: `Маршрут: ${route}<br>Тип: ${folderName}`
@@ -57,8 +63,10 @@ function getUserLocationAndAddMarker(map) {
                     iconCaption: 'Вы здесь',
                     balloonContent: '<b>Ваше местоположение</b>'
                 }, {
-                    preset: 'islands#blueCircleIconWithCaption',
-                    iconCaptionMaxWidth: '200',
+                    iconLayout: 'default#image',
+                    iconImageHref: '/static/images/icons/me.svg', // Путь к вашей иконке
+                    iconImageSize: [40, 40], // Размер иконки
+                    iconImageOffset: [-20, -20] // Сдвиг иконки (чтобы центр совпадал с местоположением)
                 });
 
                 map.geoObjects.add(userPlacemark);
