@@ -1,6 +1,5 @@
 let map;
 let placemarks = [];
-let route;
 
 // Функция для получения имени папки на основе типа транспорта
 function getFolderNameByType(type) {
@@ -13,7 +12,7 @@ function getFolderNameByType(type) {
     }
 }
 
-// Функция для обновления меток
+// Функция для обновления меток транспорта
 function updateTrams() {
     fetch('/api/trams')
         .then(response => response.json())
@@ -27,7 +26,13 @@ function updateTrams() {
                 const route = item.route;
 
                 const folderName = getFolderNameByType(type);
-                const iconPath = `/static/images/${folderName}/${route}.png`;
+                let iconPath;
+                if (route.length > 4) {
+                    iconPath = `/static/images/service/s.png`; // Альтернативный путь
+                } else {
+                    iconPath = `/static/images/${folderName}/${route}.png`; // Оригинальный путь
+                }
+                
 
                 const placemark = new ymaps.Placemark(coordinates, {
                     balloonContent: `Маршрут: ${route}<br>Тип: ${folderName}`
@@ -46,101 +51,122 @@ function updateTrams() {
 }
 
 // Функция для отображения местоположения пользователя
-function locateUser() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(position => {
-            const userCoordinates = [position.coords.latitude, position.coords.longitude];
-            const userPlacemark = new ymaps.Placemark(userCoordinates, {
-                iconCaption: 'Вы здесь',
-                balloonContent: '<b>Ваше местоположение</b>'
-            }, {
-                preset: 'islands#blueCircleIconWithCaption',
-                iconCaptionMaxWidth: '200',
-            });
+// Функция для получения местоположения пользователя и добавления метки на карту
+function getUserLocationAndAddMarker(map) {
+    return new Promise((resolve, reject) => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
+                const userCoordinates = [position.coords.latitude, position.coords.longitude];
 
-            map.geoObjects.add(userPlacemark);
-            map.setCenter(userCoordinates, 14);
-        }, error => {
-            alert("Не удалось определить местоположение.");
+                // Создаем и добавляем метку на карту
+                const userPlacemark = new ymaps.Placemark(userCoordinates, {
+                    iconCaption: 'Вы здесь',
+                    balloonContent: '<b>Ваше местоположение</b>'
+                }, {
+                    iconLayout: 'default#image',
+                    iconImageHref: '/static/images/icons/me.svg', // Путь к вашей иконке
+                    iconImageSize: [40, 40], // Размер иконки
+                    iconImageOffset: [-20, -20] // Сдвиг иконки (чтобы центр совпадал с местоположением)
+                });
+
+                map.geoObjects.add(userPlacemark);
+                map.setCenter(userCoordinates, 14);
+
+                resolve(userCoordinates);  // Возвращаем координаты
+            }, reject);
+        } else {
+            reject("Geolocation не поддерживается браузером");
+        }
+    });
+}
+
+// Функция для подстановки местоположения в поле маршрута, если оно пустое
+function setFromLocationIfEmpty(routePanelControl, userCoordinates) {
+    const fromPoint = routePanelControl.routePanel.state.get('from');
+    if (!fromPoint || fromPoint === "") {
+        routePanelControl.routePanel.state.set({
+            from: userCoordinates
         });
-    } else {
-        alert("Ваш браузер не поддерживает Geolocation API.");
     }
 }
 
-// Функция для получения координат через геокодер Яндекс по URL
-// Функция для получения координат через геокодер Яндекс по URL
-function getCoordinates(address) {
-    const apiKey = '0f0cb27e-11ce-400f-af08-b552d5546e3c'; // Замените на ваш ключ API
-    const geocodeUrl = 'https://geocode-maps.yandex.ru/1.x/';
-    const url = `${geocodeUrl}?geocode=${encodeURIComponent(address)}&format=json&apikey=${apiKey}`;
-    
-    return fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            const geoObject = data.response.GeoObjectCollection.featureMember[0]?.GeoObject;
-            if (!geoObject) throw new Error("Адрес не найден");
-
-            const coords = geoObject.Point.pos.split(' '); // Получаем координаты
-            const latLon = [parseFloat(coords[1]), parseFloat(coords[0])]; // Возвращаем их как массив [lat, lon]
-            console.log(`Координаты для ${address}: `, latLon); // Логирование координат
-            return latLon;
-        })
-        .catch(error => {
-            alert(error.message || "Ошибка при геокодировании");
-            throw error;
-        });
-}
-
-// Функция для построения мультимаршрута
-function buildMultiRoute() {
-    const start = document.getElementById('start').value;
-    const end = document.getElementById('end').value;
-    const waypoints = document.getElementById('waypoints').value;  // Дополнительные точки, если они есть
-
-    if (!start || !end) return alert("Укажите начальную и конечную точки маршрута.");
-
-    // Разделяем точки на массив, если указаны дополнительные пути
-    const waypointsArr = waypoints ? waypoints.split(',').map(point => point.trim()) : [];
-
-    // Получаем координаты для начальной и конечной точки и дополнительных точек
-    Promise.all([getCoordinates(start), getCoordinates(end), ...waypointsArr.map(getCoordinates)])
-        .then(coords => {
-            console.log('Координаты для маршрута:', coords); // Логирование всех координат
-
-            const multiRoute = new ymaps.multiRouter.MultiRoute({
-                referencePoints: [coords[0], ...coords.slice(1)],  // Создаем маршрут с начальной, дополнительными и конечной точками
-                params: {
-                    routingMode: 'masstransit'
-                }
-            }, {
-                boundsAutoApply: true
-            });
-
-            // Удаляем старый маршрут, если он есть
-            if (route) map.geoObjects.remove(route);
-
-            // Добавляем новый маршрут на карту
-            map.geoObjects.add(multiRoute);
-            map.setBounds(multiRoute.getBounds());  // Обрезаем карту по границам маршрута
-        })
-        .catch(error => alert("Не удалось найти одну из точек маршрута."));
-}
 
 // Инициализация карты
 ymaps.ready(() => {
+    // Инициализируем карту
     map = new ymaps.Map("map", {
-        center: [45.035470, 38.975313],
-        zoom: 12
+        center: [45.035470, 38.975313],  // Центр карты (Краснодар)
+        zoom: 10
     });
 
-    locateUser();
-    updateTrams();
-    setInterval(updateTrams, 5000);
+    // Обработчик для кнопки увеличения масштаба
+    document.getElementById('zoomIn').addEventListener('click', () => {
+        let currentZoom = map.getZoom();
+        map.setZoom(currentZoom + 1);  // Увеличиваем масштаб на 1
+    });
 
-    new ymaps.SuggestView('start', { boundedBy: [[44, 37], [46, 40]] });
-    new ymaps.SuggestView('end', { boundedBy: [[44, 37], [46, 40]] });
+    // Обработчик для кнопки уменьшения масштаба
+    document.getElementById('zoomOut').addEventListener('click', () => {
+        let currentZoom = map.getZoom();
+        map.setZoom(currentZoom - 1);  // Уменьшаем масштаб на 1
+    });
+
+    updateTrams();  // Обновляем метки транспорта
+    setInterval(updateTrams, 10000);  // Обновляем метки каждые 10 секунд
+
+    // Добавляем панель маршрутизации
+    const button = document.getElementById('p2p-btn');
+    // Переменная - флаг
+    let isRoutePanelOpen = false;
+    let routePanelControl = null;
     
-    // Вызываем функцию для построения мультимаршрута
-    document.getElementById('buildRouteBtn').addEventListener('click', buildMultiRoute);
+    button.addEventListener('click', function() {
+        if (isRoutePanelOpen) {
+            // Если панель открыта, удаляем её
+            map.controls.remove(routePanelControl);
+            isRoutePanelOpen = false;
+        } else {
+            // Создаём панель маршрута
+            routePanelControl = new ymaps.control.RoutePanel({
+                options: {
+                    maxWidth: 400,
+                    float: 'left',
+                    position: {
+                        top: '50px',
+                        left: '20px'
+                    }
+                }
+            });
+
+        // Задаем параметры маршрута по умолчанию
+        routePanelControl.routePanel.state.set({
+            type: "auto", // Режим маршрута: "masstransit", "pedestrian", "auto"
+            fromEnabled: true,
+            toEnabled: true,
+            from: "",  // Начальная точка
+            to: ""     // Конечная точка
+        });
+
+        routePanelControl.routePanel.options.set({
+            types: {
+                auto: true,
+                pedestrian: true,
+                masstransit: true,
+                taxi: true
+            }
+        });
+
+        map.controls.add(routePanelControl);
+        isRoutePanelOpen = true;
+
+        getUserLocationAndAddMarker(map)
+            .then(userCoordinates => {
+                // Подставляем местоположение в поле "from", если оно пустое
+                setFromLocationIfEmpty(routePanelControl, userCoordinates);
+            })
+            .catch(error => {
+                alert("Не удалось определить местоположение. Ошибка: " + error);
+            });
+        }
+    });
 });
