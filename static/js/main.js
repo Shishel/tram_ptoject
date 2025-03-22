@@ -115,7 +115,7 @@ ymaps.ready(() => {
     setInterval(updateTrams, 10000);  // Обновляем метки каждые 10 секунд
 
     // Добавляем панель маршрутизации
-    const button = document.getElementById('p2p-btn');
+    const button = document.getElementById('search-container');
     // Переменная - флаг
     let isRoutePanelOpen = false;
     let routePanelControl = null;
@@ -135,6 +135,7 @@ ymaps.ready(() => {
                         top: '50px',
                         left: '20px'
                     }
+    
                 }
             });
 
@@ -152,7 +153,6 @@ ymaps.ready(() => {
                 auto: true,
                 pedestrian: true,
                 masstransit: true,
-                taxi: true
             }
         });
 
