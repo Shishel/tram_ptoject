@@ -114,59 +114,24 @@ ymaps.ready(() => {
     updateTrams();  // Обновляем метки транспорта
     setInterval(updateTrams, 10000);  // Обновляем метки каждые 10 секунд
 
-    // Добавляем панель маршрутизации
     const button = document.getElementById('search-container');
-    // Переменная - флаг
-    let isRoutePanelOpen = false;
-    let routePanelControl = null;
-    
-    button.addEventListener('click', function() {
-        if (isRoutePanelOpen) {
-            // Если панель открыта, удаляем её
-            map.controls.remove(routePanelControl);
-            isRoutePanelOpen = false;
-        } else {
-            // Создаём панель маршрута
-            routePanelControl = new ymaps.control.RoutePanel({
-                options: {
-                    maxWidth: 400,
-                    float: 'left',
-                    position: {
-                        top: '50px',
-                        left: '20px'
-                    }
-    
-                }
-            });
+    const routePanel = document.getElementById('routepanel');
+    const saveButton = document.getElementById('submit');
 
-        // Задаем параметры маршрута по умолчанию
-        routePanelControl.routePanel.state.set({
-            type: "auto", // Режим маршрута: "masstransit", "pedestrian", "auto"
-            fromEnabled: true,
-            toEnabled: true,
-            from: "",  // Начальная точка
-            to: ""     // Конечная точка
-        });
-
-        routePanelControl.routePanel.options.set({
-            types: {
-                auto: true,
-                pedestrian: true,
-                masstransit: true,
-            }
-        });
-
-        map.controls.add(routePanelControl);
-        isRoutePanelOpen = true;
-
-        getUserLocationAndAddMarker(map)
-            .then(userCoordinates => {
-                // Подставляем местоположение в поле "from", если оно пустое
-                setFromLocationIfEmpty(routePanelControl, userCoordinates);
-            })
-            .catch(error => {
-                alert("Не удалось определить местоположение. Ошибка: " + error);
-            });
+    // Обработчик клика для отображения панели при клике на search-container
+    button.addEventListener('click', function(event) {
+        // Проверка, чтобы клики внутри панели не закрывали её
+        if (!routePanel.contains(event.target)) {
+            routePanel.style.display = (routePanel.style.display === 'none' || routePanel.style.display === '') 
+                ? 'block' 
+                : 'none';
         }
+    });
+    saveButton.addEventListener('click', function() {
+        const input1 = document.getElementById('input1').value;
+        const input2 = document.getElementById('input2').value;
+
+        // Закрытие панели после нажатия кнопки "Сохранить"
+        routePanel.style.display = 'none';
     });
 });
