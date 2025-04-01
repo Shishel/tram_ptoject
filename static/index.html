@@ -137,28 +137,6 @@
         align-self: center; 
     }
 
-    .side-panel {
-        position: fixed;
-        z-index: 1100;
-        bottom: 5%;
-        left: -100%; 
-        width: 20%;
-        height: 90%; 
-        background-color: #f4f4f4;
-        opacity: 0; 
-        transition: 0.4s ease; 
-        pointer-events: none; 
-        border-radius: 20px;
-        display: flex;
-        flex-direction: column; 
-        }
-
-    .side-panel.active {
-        left: 0; 
-        opacity: 1; 
-        pointer-events: auto; 
-    }
-
     .routepanel {
         display: none; 
         background-color: #e6e6e6; 
@@ -229,28 +207,63 @@
        transition: background-color 0.3s;
    }
 
-    .toggle-btn {
+    #infoPanel {
+        display: none;
         position: fixed;
-        z-index: 1100;
-        top: 7%;
-        left: 0.5%; 
-        background-color: #333;
-        height: 50px;
-        width: 25px;
-        color: white;
-        border: none;
+        bottom: 20px;
+        left: 20px;
+        width: 300px;
+        height: 300px;
+        background-color: #e6e6e6;
+        border: 1px solid #BBBBBB;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .panel-container {
         display: flex;
-        justify-content: center; 
+        align-items: center; /* Вертикальное выравнивание элементов */
+        margin: 20px;
+    }
+
+    .red-box {
+        position: absolute;
+        background-color: red;
+        color: white; /* Цвет текста внутри прямоугольника */
+        padding: 5px;
+        border-radius: 5px; /* Скругленные углы прямоугольника */
+        top: 7px;
+        left: 7px;
+        height: 40px;
+        width: 120px;
+    }
+
+    .side-text {
+        position: absolute;
+        font-size: 12px; /* Размер текста сбоку */
+        color: rgb(94, 94, 94);
+        top: 7px;
+        left: 140px;
+    }
+
+    .details-container {
+        margin-top: 40px; /* Отступ сверху для отделения от panel-container */
+    }
+
+    .detail-row {
+        display: flex;
         align-items: center;
-        cursor: pointer;
-        border-radius: 5px;
-        transition: 0.4s ease;
+        margin-bottom: 20px; /* Отступ между строками */
+        height: 30px;
+        color:black
     }
 
-    .toggle-btn.active {
-        left: 20.5%; 
+    .detail-icon {
+        width: 30px; /* Ширина изображения */
+        height: 30px; /* Высота изображения */
+        margin-right: 10px; /* Отступ справа для отделения от текста */
     }
-
 
 
     </style>
@@ -275,8 +288,7 @@
                         </div>
                     <div class="button-container">
                         <button type="button" id="btn1" class="btn-secondary" src="/static/images/icons/flip.svg" alt="flip-icon">
-                            <img src="/static/images/icons/auto.svg" alt="auto Icon">
-                        </button>
+                            <img src="/static/images/icons/auto.svg" alt="auto Icon"></button>
                         <button type="button" id="btn2" class="btn-secondary">
                             <img src="/static/images/icons/masstranslit.svg" alt="tram Icon"></button>
                         <button type="button" id="btn3" class="btn-secondary">
@@ -294,56 +306,35 @@
         <div id="right-logo">
             <img src="images/icons//logo 1.svg">
         </div>
-    </div>
-
-    <div class="side-panel">
-        <div class="panel-part part1"></div>
-        <div class="panel-part part2">
-            <div class="red-block">
-                <!--изображение трамвая-->
-                <img src="images/icons//tram.svg" alt="Description" class="left-image">
-            <p style="font-size: 25px; margin-top: 7px;">232</p>
+        <div id="infoPanel">
+            <div class="panel-container">
+                <div id="transport-data"class="side-text">
+                  Текст в прямоугольнике
+                </div>
+                <div class="red-box">
+                  #333
+                </div>
             </div>
-
-            <div class="next-to-red-block">
-                <p style="color: #727370; font-size: 16px;">problem</p>
-                <p style="color: black; font-size: 16px;">solver</p>
-            </div>
-            <div class="btn-container">
-                <button class="btn btn-one" onclick="changeImage(this)">
-                    <!--первоеизображение маршрута-->
-                   <img src="images/icons//path.svg" alt="destination" border="0"/>
-                </button>
-                <button class="btn btn-two" onclick="changeImage(this)">
-                    <!--первое изображение избранного-->
-                   <img src="images/icons//fav.svg" alt="favourite" border="0"/>
-                </button>
-            </div>
-        <div class="image-text-block">
-            <div class="row">
-                <!--изображение галочки-->
-                <img src="images/icons//true.svg" alt="Icon 1" class="small-image">
-                <span>Низкий пол</span>
-            </div>
-            <div class="row">
-                <!--изображение крестика-->
-                <img src="images/icons//false.svg" alt="Icon 2" class="small-image">
-                <span>Кондиционер</span>
-            </div>
-            <div class="row">
-                <!--изображение галочки-->
-                <img src="images/icons//true.svg" alt="Icon 1" class="small-image">
-                <span>Wi-Fi</span>
-            </div>
-            <div class="row">
-                <!--изображение трамвая на красном фоне-->
-                <img src="images/icons//tram-icon.svg" alt="tram Icon" class="small-image">
-                <span style="font-family: arial;">Трамвай</span>
-            </div>
-        </div>
+            <div class="details-container">
+                <div class="detail-row">
+                  <img src="images/icons/X.svg" alt="галка 1" class="detail-icon">
+                  <span>Низкий пол</span>
+                </div>
+                <div class="detail-row">
+                  <img src="images/icons/X.svg" alt="Описание 2" class="detail-icon">
+                  <span>Кондиционер</span>
+                </div>
+                <div class="detail-row">
+                  <img src="images/icons/false.svg" alt="false" class="detail-icon">
+                  <span>Wi-Fi</span>
+                </div>
+                <div class="detail-row">
+                  <img src="images/icons/X.svg" alt="Описание 4" class="detail-icon">
+                  <span>ss</span>
+                </div>
+              </div>
         </div>
     </div>
-   
 </div>
 
 

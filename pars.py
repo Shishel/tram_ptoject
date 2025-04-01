@@ -38,6 +38,7 @@ def fetch_data():
                             "type": parts[0].strip(),
                             "route": parts[1].strip(),
                             "speed": parts[4].strip(),
+                            "bort of number": parts[5].strip,
                             "lat": lat,
                             "lon": lon
                         })

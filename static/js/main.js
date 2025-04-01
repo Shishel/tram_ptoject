@@ -28,9 +28,9 @@ function updateTrams() {
                 const folderName = getFolderNameByType(type);
                 let iconPath;
                 if (route.length > 4) {
-                    iconPath = `/static/images/service/s.png`; // Альтернативный путь
+                    iconPath = `images/service/s.png`; // Альтернативный путь
                 } else {
-                    iconPath = `/static/images/${folderName}/${route}.png`; // Оригинальный путь
+                    iconPath = `images/${folderName}/${route}.png`; // Оригинальный путь
                 }
                 
 
@@ -43,11 +43,82 @@ function updateTrams() {
                     iconImageOffset: [-15, -15]
                 });
 
+                placemark.events.add('balloonopen', function () {
+                    openInfoPanel(route, folderName);
+                    updateDetails(folderName);
+                });
+
                 map.geoObjects.add(placemark);
                 placemarks.push(placemark);
             });
         })
         .catch(error => console.error("Ошибка при получении данных с API:", error));
+}
+
+function updateDetails(type) {
+    const detailsContainer = document.getElementById("details-container");
+    let detailsHTML = '';
+
+    if (type === 'tram') {
+        detailsHTML = `
+            <div class="detail-row">
+                  <img src="images/icons/X.svg" alt="галка 1" class="detail-icon">
+                  <span>Низкий пол</span>
+                </div>
+                <div class="detail-row">
+                  <img src="images/icons/X.svg" alt="Описание 2" class="detail-icon">
+                  <span>Кондиционер</span>
+                </div>
+                <div class="detail-row">
+                  <img src="images/icons/false.svg" alt="false" class="detail-icon">
+                  <span>Wi-Fi</span>
+                </div>
+                <div class="detail-row">
+                  <img src="images/icons/X.svg" alt="Описание 4" class="detail-icon">
+                  <span>ss</span>
+                </div>
+        `;
+    } else if (type === 'bus') {
+        detailsHTML = `
+            <div class="detail-row">
+                  <img src="images/icons/false.svg" alt="галка 1" class="detail-icon">
+                  <span>Низкий пол</span>
+                </div>
+                <div class="detail-row">
+                  <img src="images/icons/X.svg" alt="Описание 2" class="detail-icon">
+                  <span>Кондиционер</span>
+                </div>
+                <div class="detail-row">
+                  <img src="images/icons/false.svg" alt="false" class="detail-icon">
+                  <span>Wi-Fi</span>
+                </div>
+                <div class="detail-row">
+                  <img src="images/icons/X.svg" alt="Описание 4" class="detail-icon">
+                  <span>ss</span>
+                </div>
+        `;
+    } else if (type === 'trol') {
+        detailsHTML = `
+            <div class="detail-row">
+                  <img src="images/icons/X.svg" alt="галка 1" class="detail-icon">
+                  <span>Низкий пол</span>
+                </div>
+                <div class="detail-row">
+                  <img src="images/icons/false.svg" alt="Описание 2" class="detail-icon">
+                  <span>Кондиционер</span>
+                </div>
+                <div class="detail-row">
+                  <img src="images/icons/false.svg" alt="false" class="detail-icon">
+                  <span>Wi-Fi</span>
+                </div>
+                <div class="detail-row">
+                  <img src="images/icons/X.svg" alt="Описание 4" class="detail-icon">
+                  <span>ss</span>
+                </div>
+        `;
+    } 
+
+    detailsContainer.innerHTML = detailsHTML; // Устанавливаем новое содержимое
 }
 
 // Функция для отображения местоположения пользователя
@@ -89,6 +160,30 @@ function setFromLocationIfEmpty(routePanelControl, userCoordinates) {
         });
     }
 }
+
+function openInfoPanel(route, folderName) {
+    const transportData = document.getElementById('transport-data'); 
+    const transportBox = document.querySelector('.red-box');
+
+    transportData.innerHTML = `<b>Маршрут:</b> ${route}<br><b>Тип транспорта:</b> ${folderName}`;
+
+    transportBox.className = 'red-box'; 
+
+    switch (folderName) {
+        case 'bus':
+            transportBox.style.backgroundColor = 'green';
+            break;
+        case 'tram':
+            transportBox.style.backgroundColor = 'red';
+            break;
+        case 'trol':
+            transportBox.style.backgroundColor = 'blue';
+            break;
+        default:
+            transportBox.style.backgroundColor = 'grey'; 
+    }
+}
+
 
 
 // Инициализация карты
