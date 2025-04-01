@@ -116,7 +116,7 @@ ymaps.ready(() => {
 
     const button = document.getElementById('search-container');
     const routePanel = document.getElementById('routepanel');
-    const saveButton = document.getElementById('submit');
+    const exitButton = document.getElementById('exit');
 
     // Обработчик клика для отображения панели при клике на search-container
     button.addEventListener('click', function(event) {
@@ -127,11 +127,9 @@ ymaps.ready(() => {
                 : 'none';
         }
     });
-    saveButton.addEventListener('click', function() {
+    exitButton.addEventListener('click', function() {
         const input1 = document.getElementById('input1').value;
         const input2 = document.getElementById('input2').value;
-
-        // Закрытие панели после нажатия кнопки "Сохранить"
         routePanel.style.display = 'none';
     });
 });

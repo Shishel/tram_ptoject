@@ -160,19 +160,21 @@
     }
 
     .routepanel {
-        display: none; /* Скрываем панель по умолчанию */
-        background-color: #e6e6e6; /* Полупрозрачный фон */
-        position: absolute; /* Абсолютное позиционирование внутри search-container */
-        top: 0;
+        display: none; 
+        background-color: #e6e6e6; 
+        position: absolute; 
+        top: -3px;
         left: -5px;
         width: 105%;
-        height: 650%; /* Полностью закрывает search-container */
+        height: 650%;
         color: white;
         padding: 20px;
-        box-sizing: border-box; /* Учитываем padding в размерах */
-        z-index: 10; /* Устанавливаем приоритет выше других элементов */
+        box-sizing: border-box; 
+        z-index: 10; 
         border-radius: 10px;
+        border: 2px solid #BBBBBB; 
     }
+
 
     .input-style-1 {
         border: 2px solid #BBBBBB;
@@ -249,142 +251,7 @@
         left: 20.5%; 
     }
 
-    .panel-part {
-        height: 50%; 
-        padding: 20px;
-        box-sizing: border-box; 
-    }
 
-    .part1 {
-        background-color: #FFFFFF;
-        flex: 0.2;
-    }
-
-    .part2 {
-        position: relative;
-        background-color: #e0e0e0; 
-        flex: 0.8;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start; 
-        align-items: center; 
-    }
-    /*красный блок с номером маршрута*/
-    .red-block {
-        position: absolute;
-        top: 5px;
-        left: 5px;
-        width: 100px;
-        height: 40px;
-        background-color: red;
-        color: white;
-        padding: 5px;
-        border-radius: 10px; 
-        margin: 10px; 
-        text-align: center; 
-        display:grid;
-        grid-template-columns: auto 1fr;
-        align-items: start;
-    }
-
-	.left-image {
-        float: left;
-        margin-top: 5px;
-	}
-    /*блок для текста слева*/
-    .next-to-red-block {
-        margin: 10px;
-        position: absolute; 
-        top: 5px;          
-        left: 115px;        
-        width: 220px;      
-        height: 10px;      
-        background-color: #e0e0e0; 
-        color: white;      
-        display: flex;            
-        flex-direction: column;   
-        justify-content: flex-start;
-        text-align: left; 
-        border-radius: 10px;      
-        padding: 20px;
-	}
-
-	.next-to-red-block p {
-   		margin: 20px 0;             
-        margin-top: -15px;
-        margin-left: -15px;
-	}
-    /*контейнер для кнопок*/
-    .btn-container {
-        display: flex;
-        justify-content: flex-start;
-        margin-top: 50px;
-	}
-
-    .btn {
-        margin: 0 5px;
-        border: none;
-        cursor: pointer;
-        appearance: none;
-        background-color: inherit;
-        padding: 0;                      
-        width: auto;                     
-        height: auto;                    
-        border-radius: 5px;
-        transition: background-color 0.3s;
-        transform: scale(0.95);         
-    }
-
-    .btn img {
-        display: block;                 
-        width: 100%;                   
-        height: auto;                  
-    }
-
-    .btn:hover {
-        background-color: #c2bebe; 
-    }
-
-    .btn-one:hover img {
-        filter: brightness(80%) saturate(100%) invert(0);  
-    }
-
-    .btn-two:hover img {
-
-        filter: brightness(0) saturate(50%) invert(0);  
-    }
-    /*блок характеристик транспорта*/
-    .image-text-block {
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        width: 100%; 
-        margin-top: 20px; 
-        padding: 10px; 
-        border-radius: 10px;
-        background-color: #e0e0e0; 
-        font-family: "Yanone Kaffeesatz";
-        font-size: 24px;
-	}
-
-	.image-text-block .row {
-        display: flex;
-        align-items: center; 
-        margin-bottom: 10px; 
-	}	
-
-	.image-text-block .small-image {
-        width: 40px; 
-        height: 40px;
-        border-radius: 5px; 
-        margin-right: 10px; 
-	}	
-
-	.image-text-block .row span {
-        font-size: 24px; 
-        color: #333; 
-	}
 
     </style>
 </head>
@@ -415,10 +282,12 @@
                         <button type="button" id="btn3" class="btn-secondary">
                             <img src="/static/images/icons/walking.svg" alt="walk Icon"></button>
                     </div>
-                    <button type="submit" id="flip-btn" class="btn btn-primary">
+                    <button type="button" id="flip-btn" class="btn btn-primary">
                         <img src="/static/images/icons/flip.svg" alt="Flip Icon">
                     </button>
-                    
+                    <button type="button" id="exit" style="position: relative; left: 95%; bottom: 13px; scale: 50%">
+                        <img src="/static/images/icons/X.svg" alt="exit">
+                    </button>
                 </form>
             </div>
         </div>
