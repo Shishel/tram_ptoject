@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Карта с кастомными метками</title>
+    <link href="https://fonts.googleapis.com/css2?family=Yanone+Kaffeesatz:wght@200;300;400;700&display=swap" rel="stylesheet">
+    <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&amp;apikey=0f0cb27e-11ce-400f-af08-b552d5546e3c&format=json" type="text/javascript"></script>
+    <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=0f0cb27e-11ce-400f-af08-b552d5546e3c&suggest_apikey=24b8905b-b474-4bc8-8a09-58613e7310cb"></script>
+    <script src="/static/js/main.js" type="text/javascript"></script>
+
+    <style>
+    html, body, #map {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Иконки внутри панели */
+        button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        button img {
+            width: 20px;
+            height: 20px;
+        }
+
+
+         /* Общие стили */
+    *, *:before, *:after {
+        box-sizing: border-box; /* Учитывает отступы и границы в общей ширине */
+    }
+
+    html, body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+    }
+
+    /* Верхняя панель */
+    #top-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 38px;
+        width: 100%;
+        background: linear-gradient(to right, #ff0000, #b30000); 
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px;
+        z-index: 1000;
+    }
+
+    /* Контейнер для поля поиска и кнопок */
+    #search-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+        background-color: white;
+        border-radius: 10px;
+        width: 400px;
+        height: 30px;
+        padding: 0 10px;
+    }
+
+    /* Поле поиска */
+    #route-search {
+        flex-grow: 1;
+        height: 27px;
+        padding: 10px;
+        background-repeat: no-repeat;
+        background-position: 10px center;
+        background-size: 16px;
+        border: none;
+        border-radius: 10px;
+        width: 100%;
+        background-color: transparent;
+        font-size: 14px;
+        color: black;
+        margin-left: -10px;
+    }
+
+    /* Кнопки внутри поля поиска */
+    #search-container button {
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+
+    /* иконка правом конце */
+    #right-logo {
+        display: flex;
+        align-items: center;
+        height: 175%;
+    }
+
+    #right-logo img {
+       max-height: 100%;
+   }
+
+    /* кнопки изменения масштаба*/
+    .zoom-buttons {
+        flex-direction: row; 
+        position: absolute;
+        top: 50px; 
+        right: 20px; 
+        display: flex;
+        background-color: rgba(127, 113, 113, 0.27); 
+        padding: 2px; 
+        border-radius: 10px; 
+        z-index: 1;
+        
+    }
+
+    .zoom-buttons button {
+        display: flex;
+        align-items: center;
+        margin: 0 1px;
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    .zoom-buttons button:not(:last-child)::after {
+        content: ""; 
+        display: block; 
+        width: 2px; 
+        height: 30px; 
+        background-color: rgb(13, 7, 7); 
+        margin-left: 12px; 
+        margin-right: -12px;
+        align-self: center; 
+    }
+
+    .side-panel {
+        position: fixed;
+        z-index: 1100;
+        bottom: 5%;
+        left: -100%; 
+        width: 20%;
+        height: 90%; 
+        background-color: #f4f4f4;
+        opacity: 0; 
+        transition: 0.4s ease; 
+        pointer-events: none; 
+        border-radius: 20px;
+        display: flex;
+        flex-direction: column; 
+        }
+
+    .side-panel.active {
+        left: 0; 
+        opacity: 1; 
+        pointer-events: auto; 
+    }
+
+    .routepanel {
+        display: none; /* Скрываем панель по умолчанию */
+        background-color: #e6e6e6; /* Полупрозрачный фон */
+        position: absolute; /* Абсолютное позиционирование внутри search-container */
+        top: 0;
+        left: -5px;
+        width: 105%;
+        height: 650%; /* Полностью закрывает search-container */
+        color: white;
+        padding: 20px;
+        box-sizing: border-box; /* Учитываем padding в размерах */
+        z-index: 10; /* Устанавливаем приоритет выше других элементов */
+        border-radius: 10px;
+    }
+
+    .ymaps-2-1-79-suggest-item {
+    color: black !important; /* Измени на нужный цвет */
+    }
+
+    .input-style-1 {
+        border: 2px solid #BBBBBB;
+        border-radius: 5px;
+        width: 90%;
+        padding: 10px;
+        margin-bottom: 30px;
+        background-color: #E0E0E0;
+        color: #E0E0E0;
+        font-size: 16px;
+        color:#333;
+    }
+
+    .input-style-2 {
+        border: 2px solid #BBBBBB;
+        border-radius: 5px;
+        padding: 10px;
+        width: 90%;
+        background-color: #E0E0E0;
+        color: #E0E0E0;
+        font-size: 16px;
+        color:#333;
+    }
+
+    #flip-btn {
+        margin: 15px auto; /* Центрирует кнопку по горизонтали */
+        display: block; /* Требуется для выравнивания по центру с помощью margin */
+        background-color: #ff5733;
+        color: white;
+        border: none;
+        font-size: 18px;
+        padding: 10px 20px;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+        cursor: pointer;
+        top: 47px;
+        left: 363px;
+        position: fixed;
+    }
+
+    .button-container {
+       display: flex; 
+   }
+
+   .btn-secondary {
+       color: white;
+       margin-right: 120px;
+       margin-top: 20px;
+       border: none;
+       font-size: 16px;
+       border-radius: 5px;
+       transition: background-color 0.3s;
+   }
+
+    .toggle-btn {
+        position: fixed;
+        z-index: 1100;
+        top: 7%;
+        left: 0.5%; 
+        background-color: #333;
+        height: 50px;
+        width: 25px;
+        color: white;
+        border: none;
+        display: flex;
+        justify-content: center; 
+        align-items: center;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: 0.4s ease;
+    }
+
+    .toggle-btn.active {
+        left: 20.5%; 
+    }
+
+    .panel-part {
+        height: 50%; 
+        padding: 20px;
+        box-sizing: border-box; 
+    }
+
+    .part1 {
+        background-color: #FFFFFF;
+        flex: 0.2;
+    }
+
+    .part2 {
+        position: relative;
+        background-color: #e0e0e0; 
+        flex: 0.8;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start; 
+        align-items: center; 
+    }
+    /*красный блок с номером маршрута*/
+    .red-block {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        width: 100px;
+        height: 40px;
+        background-color: red;
+        color: white;
+        padding: 5px;
+        border-radius: 10px; 
+        margin: 10px; 
+        text-align: center; 
+        display:grid;
+        grid-template-columns: auto 1fr;
+        align-items: start;
+    }
+
+	.left-image {
+        float: left;
+        margin-top: 5px;
+	}
+    /*блок для текста слева*/
+    .next-to-red-block {
+        margin: 10px;
+        position: absolute; 
+        top: 5px;          
+        left: 115px;        
+        width: 220px;      
+        height: 10px;      
+        background-color: #e0e0e0; 
+        color: white;      
+        display: flex;            
+        flex-direction: column;   
+        justify-content: flex-start;
+        text-align: left; 
+        border-radius: 10px;      
+        padding: 20px;
+	}
+
+	.next-to-red-block p {
+   		margin: 20px 0;             
+        margin-top: -15px;
+        margin-left: -15px;
+	}
+    /*контейнер для кнопок*/
+    .btn-container {
+        display: flex;
+        justify-content: flex-start;
+        margin-top: 50px;
+	}
+
+    .btn {
+        margin: 0 5px;
+        border: none;
+        cursor: pointer;
+        appearance: none;
+        background-color: inherit;
+        padding: 0;                      
+        width: auto;                     
+        height: auto;                    
+        border-radius: 5px;
+        transition: background-color 0.3s;
+        transform: scale(0.95);         
+    }
+
+    .btn img {
+        display: block;                 
+        width: 100%;                   
+        height: auto;                  
+    }
+
+    .btn:hover {
+        background-color: #c2bebe; 
+    }
+
+    .btn-one:hover img {
+        filter: brightness(80%) saturate(100%) invert(0);  
+    }
+
+    .btn-two:hover img {
+
+        filter: brightness(0) saturate(50%) invert(0);  
+    }
+    /*блок характеристик транспорта*/
+    .image-text-block {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        width: 100%; 
+        margin-top: 20px; 
+        padding: 10px; 
+        border-radius: 10px;
+        background-color: #e0e0e0; 
+        font-family: "Yanone Kaffeesatz";
+        font-size: 24px;
+	}
+
+	.image-text-block .row {
+        display: flex;
+        align-items: center; 
+        margin-bottom: 10px; 
+	}	
+
+	.image-text-block .small-image {
+        width: 40px; 
+        height: 40px;
+        border-radius: 5px; 
+        margin-right: 10px; 
+	}	
+
+	.image-text-block .row span {
+        font-size: 24px; 
+        color: #333; 
+	}
+
+    </style>
+</head>
+<body>
+    <!-- Верхняя панель -->
+    <div id="top-bar">
+        <!-- Поиск -->
+        <div id="search-container">
+            <input type="text" id="route-search" placeholder="Поиск и выбор мест" />
+            <button id="search-btn">
+                <img src="/static/images/icons/search-background.svg" alt="search">
+            </button>
+            <div class="routepanel" id="routepanel">
+                <form>
+                    <form id="route-form">
+                        <div class="form-group">
+                            <input type="text" id="input1" name="input1" class="form-control input-style-1" placeholder="Откуда">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="input2" name="input2" class="form-control input-style-2" placeholder="Куда">
+                        </div>
+                    <div class="button-container">
+                        <button type="button" id="btn1" class="btn-secondary" src="/static/images/icons/flip.svg" alt="flip-icon">
+                            <img src="/static/images/icons/auto.svg" alt="auto Icon">
+                        </button>
+                        <button type="button" id="btn2" class="btn-secondary">
+                            <img src="/static/images/icons/masstranslit.svg" alt="tram Icon"></button>
+                        <button type="button" id="btn3" class="btn-secondary">
+                            <img src="/static/images/icons/walking.svg" alt="walk Icon"></button>
+                    </div>
+                    <button type="button" id="flip-btn" class="btn btn-primary">
+                        <img src="/static/images/icons/flip.svg" alt="Flip Icon">
+                    </button>
+                    
+                </form>
+            </div>
+        </div>
+        <div id="right-logo">
+            <a href="https://tkpay.ru/">
+                <img id="right-logo" class="right-logo" src="/static/images/icons/logo 1.svg" alt="Нажми меня">
+            </a>
+        </div>
+    </div>
+
+    <div class="side-panel">
+        <div class="panel-part part1"></div>
+        <div class="panel-part part2">
+            <div class="red-block">
+                <!--изображение трамвая-->
+                <img src="/static/images/icons/tram.svg" alt="Description" class="left-image">
+            <p style="font-size: 25px; margin-top: 7px;">232</p>
+            </div>
+
+            <div class="next-to-red-block">
+                <p style="color: #727370; font-size: 16px;">problem</p>
+                <p style="color: black; font-size: 16px;">solver</p>
+            </div>
+            <div class="btn-container">
+                <button class="btn btn-one" onclick="changeImage(this)">
+                    <!--первоеизображение маршрута-->
+                   <img src="/static/images/icons/path.svg" alt="destination" border="0"/>
+                </button>
+                <button class="btn btn-two" onclick="changeImage(this)">
+                    <!--первое изображение избранного-->
+                   <img src="/static/images/icons/fav.svg" alt="favourite" border="0"/>
+                </button>
+            </div>
+        <div class="image-text-block">
+            <div class="row">
+                <!--изображение галочки-->
+                <img src="images/icons//true.svg" alt="Icon 1" class="small-image">
+                <span>Низкий пол</span>
+            </div>
+            <div class="row">
+                <!--изображение крестика-->
+                <img src="images/icons//false.svg" alt="Icon 2" class="small-image">
+                <span>Кондиционер</span>
+            </div>
+            <div class="row">
+                <!--изображение галочки-->
+                <img src="images/icons//true.svg" alt="Icon 1" class="small-image">
+                <span>Wi-Fi</span>
+            </div>
+            <div class="row">
+                <!--изображение трамвая на красном фоне-->
+                <img src="images/icons//tram-icon.svg" alt="tram Icon" class="small-image">
+                <span style="font-family: arial;">Трамвай</span>
+            </div>
+        </div>
+        </div>
+    </div>
+   
+</div>
+
+
+    <!-- Карта -->
+    <div id="map"></div>
+    <div class="zoom-buttons">
+        <button id="zoomIn">
+            <img src="/static/images/icons/zoom-icon.svg" alt="Zoom In" style="width: 20px; height: 20px;"></button>
+        <button id="zoomOut">
+            <img src="/static/images/icons/unzoom-icon.svg" alt="Zoom Out" style="width: 20px; height: 20px;"></button>
+    </div>
+
+</body>
+</html>
