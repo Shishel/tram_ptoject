@@ -20,7 +20,7 @@ function updateRouteType(type) {
 
 // Функция для обновления меток транспорта
 function updateTrams() {
-    fetch('/api/trams')
+    fetch('http://127.0.0.1:5000/api/trams')
         .then(response => response.json())
         .then(data => {
             placemarks.forEach(placemark => map.geoObjects.remove(placemark));
