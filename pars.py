@@ -5,7 +5,6 @@ import requests
 import time
 import os
 
-
 app = Flask(__name__, static_folder='static')
 
 CORS(app)
@@ -44,7 +43,9 @@ def fetch_data():
                         })
                     except ValueError as e:
                         print(f"Ошибка преобразования данных: {e}")
-            tram_data = updated_data
+            # Обновляем глобальную переменную
+            with app.app_context():
+                tram_data[:] = updated_data  # Обновляем данные внутри глобальной переменной
             print("Данные успешно обновлены!")
         except requests.RequestException as e:
             print(f"Ошибка при запросе данных: {e}")
@@ -75,4 +76,4 @@ if __name__ == "__main__":
     # Поток для парсинга данных
     threading.Thread(target=fetch_data, daemon=True).start()
     print("Сервер запускается...")
-    app.run(debug=True, use_reloader=False)
+    app.run(debug=True, host='0.0.0.0', port=5000, use_reloader=False)
