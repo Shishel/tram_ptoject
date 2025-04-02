@@ -7,7 +7,7 @@ import os
 
 app = Flask(__name__, static_folder='static')
 
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Глобальная переменная для данных
 tram_data = []
