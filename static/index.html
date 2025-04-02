@@ -93,16 +93,14 @@
         cursor: pointer;
     }
 
-    /* иконка правом конце */
+
+
     #right-logo {
         display: flex;
-        align-items: center;
-        height: 175%;
+        align-items: right;
+        height: 150%; 
+        margin-left: -60%;
     }
-
-    #right-logo img {
-       max-height: 100%;
-   }
 
     /* кнопки изменения масштаба*/
     .zoom-buttons {
@@ -137,46 +135,22 @@
         align-self: center; 
     }
 
-    .side-panel {
-        position: fixed;
-        z-index: 1100;
-        bottom: 5%;
-        left: -100%; 
-        width: 20%;
-        height: 90%; 
-        background-color: #f4f4f4;
-        opacity: 0; 
-        transition: 0.4s ease; 
-        pointer-events: none; 
-        border-radius: 20px;
-        display: flex;
-        flex-direction: column; 
-        }
-
-    .side-panel.active {
-        left: 0; 
-        opacity: 1; 
-        pointer-events: auto; 
-    }
-
     .routepanel {
-        display: none; /* Скрываем панель по умолчанию */
-        background-color: #e6e6e6; /* Полупрозрачный фон */
-        position: absolute; /* Абсолютное позиционирование внутри search-container */
-        top: 0;
+        display: none; 
+        background-color: #e6e6e6; 
+        position: absolute; 
+        top: -3px;
         left: -5px;
         width: 105%;
-        height: 650%; /* Полностью закрывает search-container */
+        height: 650%;
         color: white;
         padding: 20px;
-        box-sizing: border-box; /* Учитываем padding в размерах */
-        z-index: 10; /* Устанавливаем приоритет выше других элементов */
+        box-sizing: border-box; 
+        z-index: 10; 
         border-radius: 10px;
+        border: 2px solid #BBBBBB; 
     }
 
-    .ymaps-2-1-79-suggest-item {
-    color: black !important; /* Измени на нужный цвет */
-    }
 
     .input-style-1 {
         border: 2px solid #BBBBBB;
@@ -202,8 +176,8 @@
     }
 
     #flip-btn {
-        margin: 15px auto; /* Центрирует кнопку по горизонтали */
-        display: block; /* Требуется для выравнивания по центру с помощью margin */
+        margin: 15px auto;
+        display: block; 
         background-color: #ff5733;
         color: white;
         border: none;
@@ -221,6 +195,10 @@
        display: flex; 
    }
 
+   .ymaps-2-1-79-suggest-item {
+    color: black !important; /* Измени на нужный цвет */
+    }
+
    .btn-secondary {
        color: white;
        margin-right: 120px;
@@ -231,164 +209,63 @@
        transition: background-color 0.3s;
    }
 
-    .toggle-btn {
-        position: fixed;
-        z-index: 1100;
-        top: 7%;
-        left: 0.5%; 
-        background-color: #333;
-        height: 50px;
-        width: 25px;
-        color: white;
-        border: none;
-        display: flex;
-        justify-content: center; 
-        align-items: center;
-        cursor: pointer;
-        border-radius: 5px;
-        transition: 0.4s ease;
-    }
-
-    .toggle-btn.active {
-        left: 20.5%; 
-    }
-
-    .panel-part {
-        height: 50%; 
-        padding: 20px;
-        box-sizing: border-box; 
-    }
-
-    .part1 {
-        background-color: #FFFFFF;
-        flex: 0.2;
-    }
-
-    .part2 {
-        position: relative;
-        background-color: #e0e0e0; 
-        flex: 0.8;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start; 
-        align-items: center; 
-    }
-    /*красный блок с номером маршрута*/
-    .red-block {
-        position: absolute;
-        top: 5px;
-        left: 5px;
-        width: 100px;
-        height: 40px;
-        background-color: red;
-        color: white;
-        padding: 5px;
-        border-radius: 10px; 
-        margin: 10px; 
-        text-align: center; 
-        display:grid;
-        grid-template-columns: auto 1fr;
-        align-items: start;
-    }
-
-	.left-image {
-        float: left;
-        margin-top: 5px;
-	}
-    /*блок для текста слева*/
-    .next-to-red-block {
-        margin: 10px;
-        position: absolute; 
-        top: 5px;          
-        left: 115px;        
-        width: 220px;      
-        height: 10px;      
-        background-color: #e0e0e0; 
-        color: white;      
-        display: flex;            
-        flex-direction: column;   
-        justify-content: flex-start;
-        text-align: left; 
-        border-radius: 10px;      
-        padding: 20px;
-	}
-
-	.next-to-red-block p {
-   		margin: 20px 0;             
-        margin-top: -15px;
-        margin-left: -15px;
-	}
-    /*контейнер для кнопок*/
-    .btn-container {
-        display: flex;
-        justify-content: flex-start;
-        margin-top: 50px;
-	}
-
-    .btn {
-        margin: 0 5px;
-        border: none;
-        cursor: pointer;
-        appearance: none;
-        background-color: inherit;
-        padding: 0;                      
-        width: auto;                     
-        height: auto;                    
-        border-radius: 5px;
-        transition: background-color 0.3s;
-        transform: scale(0.95);         
-    }
-
-    .btn img {
-        display: block;                 
-        width: 100%;                   
-        height: auto;                  
-    }
-
-    .btn:hover {
-        background-color: #c2bebe; 
-    }
-
-    .btn-one:hover img {
-        filter: brightness(80%) saturate(100%) invert(0);  
-    }
-
-    .btn-two:hover img {
-
-        filter: brightness(0) saturate(50%) invert(0);  
-    }
-    /*блок характеристик транспорта*/
-    .image-text-block {
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        width: 100%; 
-        margin-top: 20px; 
-        padding: 10px; 
+   #infoPanel {
+        position:fixed;
+        bottom: 20px;
+        left: 20px;
+        width: 300px;
+        height: 300px;
+        background-color: #e6e6e6;
+        border: 1px solid #BBBBBB;
         border-radius: 10px;
-        background-color: #e0e0e0; 
-        font-family: "Yanone Kaffeesatz";
-        font-size: 24px;
-	}
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
 
-	.image-text-block .row {
+    .panel-container {
         display: flex;
         align-items: center; 
-        margin-bottom: 10px; 
-	}	
+        margin: 20px;
+    }
 
-	.image-text-block .small-image {
-        width: 40px; 
-        height: 40px;
+    .red-box {
+        position: relative;
+        background-color: red;
+        color: white; 
+        padding: 5px;
         border-radius: 5px; 
-        margin-right: 10px; 
-	}	
+        top: -25px;
+        left: -30px;
+        height: 40px;
+        width: 120px;
+    }
 
-	.image-text-block .row span {
-        font-size: 24px; 
-        color: #333; 
-	}
+    .side-text {
+        position: absolute;
+        font-size: 12px; 
+        color: rgb(94, 94, 94);
+        top: 7px;
+        left: 140px;
+    }
+
+    .details-container {
+        margin-top: -15px; 
+    }
+
+    .detail-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px; 
+        height: 30px;
+        color:black
+    }
+
+    .detail-icon {
+        width: 30px; 
+        height: 30px; 
+        margin-right: 10px; 
+    }
+
 
     </style>
 </head>
@@ -399,7 +276,7 @@
         <div id="search-container">
             <input type="text" id="route-search" placeholder="Поиск и выбор мест" />
             <button id="search-btn">
-                <img src="/static/images/icons/search-background.svg" alt="search">
+                <img src="static/images/icons/search-background.svg" alt="search">
             </button>
             <div class="routepanel" id="routepanel">
                 <form>
@@ -411,76 +288,59 @@
                             <input type="text" id="input2" name="input2" class="form-control input-style-2" placeholder="Куда">
                         </div>
                     <div class="button-container">
-                        <button type="button" id="btn1" class="btn-secondary" src="/static/images/icons/flip.svg" alt="flip-icon">
-                            <img src="/static/images/icons/auto.svg" alt="auto Icon">
-                        </button>
+                        <button type="button" id="btn1" class="btn-secondary" src="static/imagesicons/flip.svg" alt="flip-icon">
+                            <img src="static/images/icons/auto.svg" alt="auto Icon"></button>
                         <button type="button" id="btn2" class="btn-secondary">
-                            <img src="/static/images/icons/masstranslit.svg" alt="tram Icon"></button>
+                            <img src="static/images/icons/masstranslit.svg" alt="tram Icon"></button>
                         <button type="button" id="btn3" class="btn-secondary">
-                            <img src="/static/images/icons/walking.svg" alt="walk Icon"></button>
+                            <img src="static/images/icons/walking.svg" alt="walk Icon"></button>
                     </div>
                     <button type="button" id="flip-btn" class="btn btn-primary">
-                        <img src="/static/images/icons/flip.svg" alt="Flip Icon">
+                        <img src="static/images/icons/flip.svg" alt="Flip Icon">
                     </button>
-                    
+                    <button type="button" id="exit" style="position: relative; left: 95%; bottom: 13px; scale: 50%">
+                        <img src="static/images/icons/X.svg" alt="exit">
+                    </button>
                 </form>
             </div>
         </div>
         <div id="right-logo">
-            <a href="https://tkpay.ru/">
-                <img id="right-logo" class="right-logo" src="/static/images/icons/logo 1.svg" alt="Нажми меня">
-            </a>
+            <img src="static/images/icons/logo 1.svg">
+        </div>
+        <div id="infoPanel">
+            <div class="panel-container">
+                <div id="transport-data"class="side-text">
+                  Текст в прямоугольнике
+                </div>
+                <div class="red-box" style="display: grid; grid-template-areas: 'route-info' 'type-info' 'type-image';">
+                    <img id="type-image" src="static/images/icons/false.svg" alt="Тип транспорта" style="grid-area: type-image; width: 40px; height: 40px; position: absolute; top: -25px;" />
+                    <span id="route-info" style="grid-area: route-info; position:absolute; left: 50px; top: 3px; font-size: 24px; font-weight: bold;"></span>
+                </div>
+            
+            </div>
+            <div id="details-container">
+                <div class="detail-row">
+                  <img src="static/images/icons/false.svg" alt="галка 1" class="detail-icon">
+                  <span>Низкий пол</span>
+                </div>
+                <div class="detail-row">
+                  <img src="static/images/icons/false.svg" alt="Описание 2" class="detail-icon">
+                  <span>Кондиционер</span>
+                </div>
+                <div class="detail-row">
+                  <img src="static/images/icons/false.svg" alt="false" class="detail-icon">
+                  <span>Wi-Fi</span>
+                </div>
+                <div class="detail-row">
+                  <img src="static/images/icons/false.svg" alt="Описание 4" class="detail-icon">
+                  <span>Неизвестно</span>
+                </div>
+            </div>
+            <button type="button" id="exit2" style="position: relative; left: 95%; bottom: 13px; scale: 50%">
+                <img src="static/images/icons/X.svg" alt="exit2">
+            </button>
         </div>
     </div>
-
-    <div class="side-panel">
-        <div class="panel-part part1"></div>
-        <div class="panel-part part2">
-            <div class="red-block">
-                <!--изображение трамвая-->
-                <img src="/static/images/icons/tram.svg" alt="Description" class="left-image">
-            <p style="font-size: 25px; margin-top: 7px;">232</p>
-            </div>
-
-            <div class="next-to-red-block">
-                <p style="color: #727370; font-size: 16px;">problem</p>
-                <p style="color: black; font-size: 16px;">solver</p>
-            </div>
-            <div class="btn-container">
-                <button class="btn btn-one" onclick="changeImage(this)">
-                    <!--первоеизображение маршрута-->
-                   <img src="/static/images/icons/path.svg" alt="destination" border="0"/>
-                </button>
-                <button class="btn btn-two" onclick="changeImage(this)">
-                    <!--первое изображение избранного-->
-                   <img src="/static/images/icons/fav.svg" alt="favourite" border="0"/>
-                </button>
-            </div>
-        <div class="image-text-block">
-            <div class="row">
-                <!--изображение галочки-->
-                <img src="images/icons//true.svg" alt="Icon 1" class="small-image">
-                <span>Низкий пол</span>
-            </div>
-            <div class="row">
-                <!--изображение крестика-->
-                <img src="images/icons//false.svg" alt="Icon 2" class="small-image">
-                <span>Кондиционер</span>
-            </div>
-            <div class="row">
-                <!--изображение галочки-->
-                <img src="images/icons//true.svg" alt="Icon 1" class="small-image">
-                <span>Wi-Fi</span>
-            </div>
-            <div class="row">
-                <!--изображение трамвая на красном фоне-->
-                <img src="images/icons//tram-icon.svg" alt="tram Icon" class="small-image">
-                <span style="font-family: arial;">Трамвай</span>
-            </div>
-        </div>
-        </div>
-    </div>
-   
 </div>
 
 
@@ -488,9 +348,9 @@
     <div id="map"></div>
     <div class="zoom-buttons">
         <button id="zoomIn">
-            <img src="/static/images/icons/zoom-icon.svg" alt="Zoom In" style="width: 20px; height: 20px;"></button>
+            <img src="static/images/icons//zoom-icon.svg" alt="Zoom In" style="width: 20px; height: 20px;"></button>
         <button id="zoomOut">
-            <img src="/static/images/icons/unzoom-icon.svg" alt="Zoom Out" style="width: 20px; height: 20px;"></button>
+            <img src="static/images/icons//unzoom-icon.svg" alt="Zoom Out" style="width: 20px; height: 20px;"></button>
     </div>
 
 </body>
