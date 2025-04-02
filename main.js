@@ -20,7 +20,7 @@ function updateRouteType(type) {
 
 // Функция для обновления меток транспорта
 function updateTrams() {
-    fetch('https://b82f-87-121-58-199.ngrok-free.app/api/trams')
+    fetch('/api/trams')
         .then(response => response.json())
         .then(data => {
             placemarks.forEach(placemark => map.geoObjects.remove(placemark));
