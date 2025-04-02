@@ -16,8 +16,8 @@ function updateTrams() {
 
                 const folderName = getFolderNameByType(type);
                 let iconPath = (route.length > 4) 
-                    ? '/static/images/service/s.png'  
-                    : `/static/images/${folderName}/${route}.png`;
+                    ? 'images/service/s.png'  
+                    : `images/${folderName}/${route}.png`;
 
                 const placemark = new ymaps.Placemark(coordinates, {
                     balloonContent: `Маршрут: ${route}<br>Тип: ${folderName}`
@@ -49,57 +49,57 @@ function updateDetails(route, folderName) {
     if (folderName === 'tram') {
         detailsHTML = `
             <div class="detail-row">
-                  <img src="static/images/icons/true.svg" alt="галка 1" class="detail-icon">
+                  <img src="images/icons/true.svg" alt="галка 1" class="detail-icon">
                   <span>Низкий пол</span>
                 </div>
                 <div class="detail-row">
-                  <img src="static/images/icons/true.svg" alt="Описание 2" class="detail-icon">
+                  <img src="images/icons/true.svg" alt="Описание 2" class="detail-icon">
                   <span>Кондиционер</span>
                 </div>
                 <div class="detail-row">
-                  <img src="static/images/icons/false.svg" alt="false" class="detail-icon">
+                  <img src="images/icons/false.svg" alt="false" class="detail-icon">
                   <span>Wi-Fi</span>
                 </div>
                 <div class="detail-row">
-                  <img src="static/images/icons/tram_icon.svg" alt="Описание 4" class="detail-icon">
+                  <img src="images/icons/tram_icon.svg" alt="Описание 4" class="detail-icon">
                   <span>Трамвай</span>
                 </div>
         `;
     } else if (folderName === 'bus') {
         detailsHTML = `
             <div class="detail-row">
-                  <img src="static/images/icons/false.svg" alt="галка 1" class="detail-icon">
+                  <img src="images/icons/false.svg" alt="галка 1" class="detail-icon">
                   <span>Низкий пол</span>
                 </div>
                 <div class="detail-row">
-                  <img src="static/images/icons/false.svg" alt="Описание 2" class="detail-icon">
+                  <img src="images/icons/false.svg" alt="Описание 2" class="detail-icon">
                   <span>Кондиционер</span>
                 </div>
                 <div class="detail-row">
-                  <img src="static/images/icons/false.svg" alt="false" class="detail-icon">
+                  <img src="images/icons/false.svg" alt="false" class="detail-icon">
                   <span>Wi-Fi</span>
                 </div>
                 <div class="detail-row">
-                  <img src="static/images/icons/bus_icon.svg" alt="Описание 4" class="detail-icon">
+                  <img src="images/icons/bus_icon.svg" alt="Описание 4" class="detail-icon">
                   <span>Автобус</span>
                 </div>
         `;
     } else if (folderName === 'trol') {
         detailsHTML = `
             <div class="detail-row">
-                  <img src="static/images/icons/true.svg" alt="галка 1" class="detail-icon">
+                  <img src="images/icons/true.svg" alt="галка 1" class="detail-icon">
                   <span>Низкий пол</span>
                 </div>
                 <div class="detail-row">
-                  <img src="static/images/icons/true.svg" alt="Описание 2" class="detail-icon">
+                  <img src="images/icons/true.svg" alt="Описание 2" class="detail-icon">
                   <span>Кондиционер</span>
                 </div>
                 <div class="detail-row">
-                  <img src="static/images/icons/false.svg" alt="false" class="detail-icon">
+                  <img src="images/icons/false.svg" alt="false" class="detail-icon">
                   <span>Wi-Fi</span>
                 </div>
                 <div class="detail-row">
-                  <img src="static/images/icons/trol_icon.svg" alt="Описание 4" class="detail-icon">
+                  <img src="images/icons/trol_icon.svg" alt="Описание 4" class="detail-icon">
                   <span>ss</span>
                 </div>
         `;
@@ -132,13 +132,13 @@ function updateTransportData() {
 
                 switch (tram.type) {
                     case 'tram':
-                        typeImage.src = '/static/images/icons/auto_icon.svg';
+                        typeImage.src = 'images/icons/auto_icon.svg';
                         break;
                     case 'bus':
-                        typeImage.src = '/static/images/icons/bus_icon.svg';
+                        typeImage.src = 'images/icons/bus_icon.svg';
                         break;
                     case 'trol':
-                        typeImage.src = '/static/images/icons/trol_icon.svg';
+                        typeImage.src = 'images/icons/trol_icon.svg';
                         break;
                     default:
                         typeImage.src = ''; 
@@ -160,7 +160,7 @@ function getUserLocationAndAddMarker(map) {
                     balloonContent: '<b>Ваше местоположение</b>'
                 }, {
                     iconLayout: 'default#image',
-                    iconImageHref: '/static/images/icons/me.svg', // Путь к вашей иконке
+                    iconImageHref: 'images/icons/me.svg', // Путь к вашей иконке
                     iconImageSize: [40, 40], // Размер иконки
                     iconImageOffset: [-20, -20] // Сдвиг иконки (чтобы центр совпадал с местоположением)
                 });
