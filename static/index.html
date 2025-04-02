@@ -93,16 +93,14 @@
         cursor: pointer;
     }
 
-    /* иконка правом конце */
+
+
     #right-logo {
         display: flex;
-        align-items: center;
-        height: 175%;
+        align-items: right;
+        height: 150%; 
+        margin-left: -60%;
     }
-
-    #right-logo img {
-       max-height: 100%;
-   }
 
     /* кнопки изменения масштаба*/
     .zoom-buttons {
@@ -178,8 +176,8 @@
     }
 
     #flip-btn {
-        margin: 15px auto; /* Центрирует кнопку по горизонтали */
-        display: block; /* Требуется для выравнивания по центру с помощью margin */
+        margin: 15px auto;
+        display: block; 
         background-color: #ff5733;
         color: white;
         border: none;
@@ -208,7 +206,6 @@
    }
 
     #infoPanel {
-        display: none;
         position: fixed;
         bottom: 20px;
         left: 20px;
@@ -223,46 +220,46 @@
 
     .panel-container {
         display: flex;
-        align-items: center; /* Вертикальное выравнивание элементов */
+        align-items: center; 
         margin: 20px;
     }
 
     .red-box {
-        position: absolute;
+        position: relative;
         background-color: red;
-        color: white; /* Цвет текста внутри прямоугольника */
+        color: white; 
         padding: 5px;
-        border-radius: 5px; /* Скругленные углы прямоугольника */
-        top: 7px;
-        left: 7px;
+        border-radius: 5px; 
+        top: -25px;
+        left: -30px;
         height: 40px;
         width: 120px;
     }
 
     .side-text {
         position: absolute;
-        font-size: 12px; /* Размер текста сбоку */
+        font-size: 12px; 
         color: rgb(94, 94, 94);
         top: 7px;
         left: 140px;
     }
 
     .details-container {
-        margin-top: 40px; /* Отступ сверху для отделения от panel-container */
+        margin-top: -15px; 
     }
 
     .detail-row {
         display: flex;
         align-items: center;
-        margin-bottom: 20px; /* Отступ между строками */
+        margin-bottom: 20px; 
         height: 30px;
         color:black
     }
 
     .detail-icon {
-        width: 30px; /* Ширина изображения */
-        height: 30px; /* Высота изображения */
-        margin-right: 10px; /* Отступ справа для отделения от текста */
+        width: 30px; 
+        height: 30px; 
+        margin-right: 10px; 
     }
 
 
@@ -312,16 +309,18 @@
                   Текст в прямоугольнике
                 </div>
                 <div class="red-box">
-                  #333
+                    <span id="route-info"></span>
+                    <span id="type-info"></span>
+                    <img id="type-image" src="images/icons/.svg" alt="Тип транспорта" style="width: 40px; height: 40px; margin-top: 5px;" />
                 </div>
             </div>
             <div class="details-container">
                 <div class="detail-row">
-                  <img src="images/icons/X.svg" alt="галка 1" class="detail-icon">
+                  <img src="images/icons/false.svg" alt="галка 1" class="detail-icon">
                   <span>Низкий пол</span>
                 </div>
                 <div class="detail-row">
-                  <img src="images/icons/X.svg" alt="Описание 2" class="detail-icon">
+                  <img src="images/icons/false.svg" alt="Описание 2" class="detail-icon">
                   <span>Кондиционер</span>
                 </div>
                 <div class="detail-row">
@@ -329,10 +328,13 @@
                   <span>Wi-Fi</span>
                 </div>
                 <div class="detail-row">
-                  <img src="images/icons/X.svg" alt="Описание 4" class="detail-icon">
-                  <span>ss</span>
+                  <img src="images/icons/false.svg" alt="Описание 4" class="detail-icon">
+                  <span>Неизвестно</span>
                 </div>
-              </div>
+            </div>
+            <button type="button" id="exit2" style="position: relative; left: 95%; bottom: 13px; scale: 50%">
+                <img src="/static/images/icons/X.svg" alt="exit2">
+            </button>
         </div>
     </div>
 </div>

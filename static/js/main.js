@@ -1,17 +1,6 @@
 let map;
 let placemarks = [];
 
-// Функция для получения имени папки на основе типа транспорта
-function getFolderNameByType(type) {
-    switch (type) {
-        case "1": return "trol";  
-        case "2": return "bus";   
-        case "3": return "tram";  
-        case "4": return "service"; 
-        default: return "default"; 
-    }
-}
-
 // Функция для обновления меток транспорта
 function updateTrams() {
     fetch('/api/trams')
@@ -26,13 +15,9 @@ function updateTrams() {
                 const route = item.route;
 
                 const folderName = getFolderNameByType(type);
-                let iconPath;
-                if (route.length > 4) {
-                    iconPath = `images/service/s.png`; // Альтернативный путь
-                } else {
-                    iconPath = `images/${folderName}/${route}.png`; // Оригинальный путь
-                }
-                
+                let iconPath = (route.length > 4) 
+                    ? '/static/images/service/s.png'  
+                    : `/static/images/${folderName}/${route}.png`;
 
                 const placemark = new ymaps.Placemark(coordinates, {
                     balloonContent: `Маршрут: ${route}<br>Тип: ${folderName}`
@@ -43,9 +28,9 @@ function updateTrams() {
                     iconImageOffset: [-15, -15]
                 });
 
-                placemark.events.add('balloonopen', function () {
-                    openInfoPanel(route, folderName);
-                    updateDetails(folderName);
+                // Добавляем обработчик клика на метку
+                placemark.events.add('click', function () {
+                    updateDetails(route, folderName);  // Обновление данных в меню
                 });
 
                 map.geoObjects.add(placemark);
@@ -55,64 +40,66 @@ function updateTrams() {
         .catch(error => console.error("Ошибка при получении данных с API:", error));
 }
 
-function updateDetails(type) {
+
+// Функция для обновления содержимого меню
+function updateDetails(route, folderName) {
     const detailsContainer = document.getElementById("details-container");
     let detailsHTML = '';
 
-    if (type === 'tram') {
+    if (folderName === 'tram') {
         detailsHTML = `
             <div class="detail-row">
-                  <img src="images/icons/X.svg" alt="галка 1" class="detail-icon">
+                  <img src="static/images/icons/true.svg" alt="галка 1" class="detail-icon">
                   <span>Низкий пол</span>
                 </div>
                 <div class="detail-row">
-                  <img src="images/icons/X.svg" alt="Описание 2" class="detail-icon">
+                  <img src="static/images/icons/true.svg" alt="Описание 2" class="detail-icon">
                   <span>Кондиционер</span>
                 </div>
                 <div class="detail-row">
-                  <img src="images/icons/false.svg" alt="false" class="detail-icon">
+                  <img src="static/images/icons/false.svg" alt="false" class="detail-icon">
                   <span>Wi-Fi</span>
                 </div>
                 <div class="detail-row">
-                  <img src="images/icons/X.svg" alt="Описание 4" class="detail-icon">
-                  <span>ss</span>
+                  <img src="static/images/icons/tram_icon.svg" alt="Описание 4" class="detail-icon">
+                  <span>Трамвай</span>
                 </div>
         `;
-    } else if (type === 'bus') {
+    } else if (folderName === 'bus') {
         detailsHTML = `
             <div class="detail-row">
-                  <img src="images/icons/false.svg" alt="галка 1" class="detail-icon">
+                  <img src="static/images/icons/false.svg" alt="галка 1" class="detail-icon">
                   <span>Низкий пол</span>
                 </div>
                 <div class="detail-row">
-                  <img src="images/icons/X.svg" alt="Описание 2" class="detail-icon">
+                  <img src="static/images/icons/false.svg" alt="Описание 2" class="detail-icon">
                   <span>Кондиционер</span>
                 </div>
                 <div class="detail-row">
-                  <img src="images/icons/false.svg" alt="false" class="detail-icon">
+                  <img src="static/images/icons/false.svg" alt="false" class="detail-icon">
                   <span>Wi-Fi</span>
                 </div>
                 <div class="detail-row">
-                  <img src="images/icons/X.svg" alt="Описание 4" class="detail-icon">
-                  <span>ss</span>
+                  <img src="static/images/icons/bus_icon.svg" alt="Описание 4" class="detail-icon">
+                  <span>Автобус</span>
                 </div>
         `;
-    } else if (type === 'trol') {
+    } else if (folderName === 'trol') {
         detailsHTML = `
             <div class="detail-row">
-                  <img src="images/icons/X.svg" alt="галка 1" class="detail-icon">
+                  <img src="static/images/icons/true.svg" alt="галка 1" class="detail-icon">
                   <span>Низкий пол</span>
                 </div>
                 <div class="detail-row">
-                  <img src="images/icons/false.svg" alt="Описание 2" class="detail-icon">
+                  <img src="static/images/icons/true.svg" alt="Описание 2" class="detail-icon">
                   <span>Кондиционер</span>
                 </div>
                 <div class="detail-row">
-                  <img src="images/icons/false.svg" alt="false" class="detail-icon">
+                  <img src="static/images/icons/false.svg" alt="false" class="detail-icon">
                   <span>Wi-Fi</span>
                 </div>
                 <div class="detail-row">
-                  <img src="images/icons/X.svg" alt="Описание 4" class="detail-icon">
+                  <img src="static/images/icons/trol_icon.svg" alt="Описание 4" class="detail-icon">
                   <span>ss</span>
                 </div>
         `;
@@ -121,7 +108,45 @@ function updateDetails(type) {
     detailsContainer.innerHTML = detailsHTML; // Устанавливаем новое содержимое
 }
 
-// Функция для отображения местоположения пользователя
+function updateTransportData() {
+    fetch('/api/trams')
+        .then(response => response.json())
+        .then(data => {
+            const routeInfo = document.getElementById('route-info');
+            const typeInfo = document.getElementById('type-info');
+            const typeImage = document.getElementById('type-image');
+            const bortNumberInfo = document.getElementById('transport-data');
+
+            
+            if (data.length > 0) {
+                const tram = data[0]; 
+                const transportData = document.getElementById('transport-data');
+                transportData.innerHTML = `<b>Номер борта:</b> ${tram['bort of number']}<br><b>Маршрут:</b> ${tram.route}`;            } else {
+                console.log("Нет данных");
+
+                
+
+                routeInfo.innerHTML = `<b>Маршрут:</b> ${tram.route}`;
+                typeInfo.innerHTML = `<b>Тип:</b> ${tram.type}`;
+                bortNumberInfo.innerHTML = `<b>Номер борта:</b> ${tram['bort of number']}`;
+
+                switch (tram.type) {
+                    case 'tram':
+                        typeImage.src = '/static/images/icons/auto_icon.svg';
+                        break;
+                    case 'bus':
+                        typeImage.src = '/static/images/icons/bus_icon.svg';
+                        break;
+                    case 'trol':
+                        typeImage.src = '/static/images/icons/trol_icon.svg';
+                        break;
+                    default:
+                        typeImage.src = ''; 
+            }
+        }
+    })
+}
+
 // Функция для получения местоположения пользователя и добавления метки на карту
 function getUserLocationAndAddMarker(map) {
     return new Promise((resolve, reject) => {
@@ -212,10 +237,11 @@ ymaps.ready(() => {
     const button = document.getElementById('search-container');
     const routePanel = document.getElementById('routepanel');
     const exitButton = document.getElementById('exit');
+    const infopanel = document.getElementById('infoPanel')
+    const exitButton2 = document.getElementById('exit2');
 
     // Обработчик клика для отображения панели при клике на search-container
     button.addEventListener('click', function(event) {
-        // Проверка, чтобы клики внутри панели не закрывали её
         if (!routePanel.contains(event.target)) {
             routePanel.style.display = (routePanel.style.display === 'none' || routePanel.style.display === '') 
                 ? 'block' 
@@ -226,5 +252,10 @@ ymaps.ready(() => {
         const input1 = document.getElementById('input1').value;
         const input2 = document.getElementById('input2').value;
         routePanel.style.display = 'none';
+        
     });
+
+    exitButton2.addEventListener('click', function() {
+        infopanel.style.display = 'none'
+    })
 });

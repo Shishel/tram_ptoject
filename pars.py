@@ -5,7 +5,6 @@ import requests
 import time
 import os
 
-
 app = Flask(__name__, static_folder='static')
 
 CORS(app)
@@ -30,7 +29,7 @@ def fetch_data():
             updated_data = []
             for line in lines:
                 parts = line.split(',')
-                if len(parts) >= 5:
+                if len(parts) >= 6:  # Исправлено на 6
                     try:
                         lat = float(parts[3][:2] + '.' + parts[3][2:])
                         lon = float(parts[2][:2] + '.' + parts[2][2:])
@@ -38,7 +37,7 @@ def fetch_data():
                             "type": parts[0].strip(),
                             "route": parts[1].strip(),
                             "speed": parts[4].strip(),
-                            "bort of number": parts[5].strip,
+                            "bort of number": parts[5].strip(),
                             "lat": lat,
                             "lon": lon
                         })
@@ -71,7 +70,7 @@ def index():
     return send_from_directory(os.path.join(app.root_path, 'static'), 'index.html')
 
 # Основной запуск
-if __name__ == "__main__":
+if __name__ == "__main__":  # Исправлено на __name__ и __main__
     # Поток для парсинга данных
     threading.Thread(target=fetch_data, daemon=True).start()
     print("Сервер запускается...")
