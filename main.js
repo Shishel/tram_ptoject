@@ -20,7 +20,7 @@ function updateRouteType(type) {
 
 // Функция для обновления меток транспорта
 function updateTrams() {
-    fetch('/api/trams')
+    fetch('https://shishel-tram-ptoject-d15d.twc1.net/api/trams')
         .then(response => response.json())
         .then(data => {
             placemarks.forEach(placemark => map.geoObjects.remove(placemark));
