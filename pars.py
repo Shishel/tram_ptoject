@@ -55,7 +55,7 @@ def fetch_data():
         time.sleep(10)
 
 # API для данных
-@app.route('/api/trams')
+@app.route('shishel-tram-ptoject-d15d.twc1.net/api/trams')
 def get_trams():
     """
     Возвращает данные о транспорте.
